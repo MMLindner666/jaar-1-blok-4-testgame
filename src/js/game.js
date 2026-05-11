@@ -1,5 +1,5 @@
 import '../css/style.css'
-import { Actor, Engine, Vector, DisplayMode } from "excalibur"
+import { Actor, Engine, Vector, DisplayMode, randomInRange } from "excalibur"
 import { Resources, ResourceLoader } from './resources.js'
 
 export class Game extends Engine {
@@ -16,16 +16,33 @@ export class Game extends Engine {
 
     startGame() {
         console.log("start de game!")
-        const fish = new Actor()
-        fish.graphics.use(Resources.Fish.toSprite())
-        fish.pos = new Vector(500, 300)
-        fish.vel = new Vector(-10,0)
-        fish.events.on("exitviewport", (e) => this.fishLeft(e))
-        this.add(fish)
+        const background = new Actor()
+        background.graphics.use(Resources.Background.toSprite())
+        background.pos = new Vector(this.drawWidth/2, this.drawHeight/2)
+        background.scale = new Vector(1, 1)
+        background.z = -1
+        this.add(background)
+
+        for (let i = 0; i < 10; i++) {
+            const fish = new Actor()
+            fish.graphics.use(Resources.Fish.toSprite())
+            fish.pos = new Vector(275 + 75*i, 75+75*i)
+            fish.vel = new Vector(150,150)
+            fish.events.on("exitviewport", (e) => this.fishLeft(e))
+            this.add(fish)
+        }
+        
     }
 
     fishLeft(e) {
-        e.target.pos = new Vector(1350, 300)
+        if (e.target.pos.x < 0 || e.target.pos.x > this.drawWidth) {
+            e.target.vel.x = -e.target.vel.x
+            // e.target.scale = new Vector(-1,1)
+        }
+        if (e.target.pos.y < 0 || e.target.pos.y > this.drawHeight) {
+            e.target.vel.y = -e.target.vel.y
+        }
+        
     }
 }
 
